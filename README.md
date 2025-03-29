@@ -1,4 +1,3 @@
-# File Metamorph
 
   [![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
   [![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
@@ -9,7 +8,7 @@
 
 
 <div align="center">
-  <img src="./src/assets/logoWithText.svg" alt="File Metamorph Logo" width="120" height="120">
+  <img src="./src/assets/logoWithText.svg" alt="File Metamorph full Logo" width="120" height="120">
 
 </div>
 
