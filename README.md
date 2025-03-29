@@ -9,7 +9,7 @@
 
 
 <div align="center">
-  <img src="./src/assets/logo.svg" alt="File Metamorph Logo" width="120" height="120">
+  <img src="./src/assets/logoWithText.svg" alt="File Metamorph Logo" width="120" height="120">
 
 </div>
 
