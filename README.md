@@ -8,7 +8,7 @@
 
 
 <div align="center">
-  <img src="./src/assets/logotext.svg" alt="File Metamorph full Logo" width="120" height="120">
+  <img src="./src/assets/logotext.svg" alt="File Metamorph full Logo" width="600" height="600">
 
 </div>
 
