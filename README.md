@@ -1,12 +1,14 @@
 # File Metamorph
 
-<div align="center">
-  <img src="./src/assets/logo.svg" alt="File Metamorph Logo" width="120" height="120">
-  
+<div alig="center">
   [![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
   [![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
   [![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+</div>
+
+<div align="center">
+  <img src="./src/assets/logo.svg" alt="File Metamorph Logo" width="120" height="120">
 </div>
 
 ## Secure File Conversion for Everyone
@@ -97,7 +99,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Questions or suggestions? Reach out to us:
 
 - [GitHub Issues](https://github.com/filemetamorph/app/issues)
-- [Email](mailto:contact@filemetamorph.app)
+- [Email](xydisorder@gmail.com)
 
 ---
 
