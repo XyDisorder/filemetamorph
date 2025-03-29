@@ -8,7 +8,7 @@
 
 
 <div align="center">
-  <img src="./src/assets/logotext.svg" alt="File Metamorph full Logo" width="450" height="450">
+  <img src="./src/assets/logotext.svg" alt="File Metamorph full Logo" width="450">
 </div>
 
 ## Secure File Conversion for Everyone
