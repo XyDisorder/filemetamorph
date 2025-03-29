@@ -1,12 +1,15 @@
-import { useState } from 'react'
-import './App.css'
+import React from "react"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import Layout from "./components/layout/Layout"
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-     <div></div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
-export default App

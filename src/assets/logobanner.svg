@@ -1,30 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 48">
-  <!-- Logo Circle -->
-  <circle cx="24" cy="24" r="24" fill="#1abc9c" />
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="120" viewBox="0 0 500 120">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
   
-  <!-- File Icon -->
-  <path d="M14 10h15l9 9v14c0 1.657-1.343 3-3 3H10c-1.657 0-3-1.343-3-3V10c0-1.657 1.343-3 3-3h4" fill="#ffffff" />
-  
-  <!-- Folded Corner -->
-  <polygon points="29,10 29,19 38,19" fill="#1abc9c" />
-  
-  <!-- Transformation Arrow (Chevron) -->
-  <path d="M20 25l4 4 4-4" fill="none" stroke="#1abc9c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-  
-  <!-- Title Text -->
-  <g transform="translate(58, 28)">
-    <!-- "File" text -->
-    <text font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#4a4a4a">
-      File
-    </text>
-    <!-- "Metamorph" text -->
-    <text font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#1abc9c" x="33">
-      Metamorph
-    </text>
+  <!-- Icon container -->
+  <g transform="translate(10,10)">
+    <circle cx="50" cy="50" r="50" fill="#1abc9c"/>
+    <path d="M30 25h30l18 18v27c0 3.314-2.686 6-6 6H25c-3.314 0-6-2.686-6-6V30c0-3.314 2.686-6 6-6h5" fill="#FFFFFF"/>
+    <polygon points="60,25 60,43 78,43" fill="#1abc9c"/>
+    <path d="M40 52l10 10 10-10" fill="none" stroke="#1abc9c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
   </g>
   
+  <!-- Text "File Metamorph" avec File en gris -->
+  <text x="140" y="70" font-family="Arial, sans-serif" font-size="48" font-weight="bold">
+    <tspan fill="#666666">File</tspan>
+    <tspan fill="#1abc9c" filter="url(#glow)" x="245" y="70">M</tspan>
+    <tspan fill="#FFFFFF" x="285" y="70">etamorph</tspan>
+  </text>
+  
   <!-- Tagline -->
-  <text font-family="Arial, sans-serif" font-size="9" fill="#666666" x="58" y="40">
+  <text x="140" y="95" font-family="Arial, sans-serif" font-size="16" fill="#CCCCCC">
     Secure file conversion. No tracking. No storage.
   </text>
 </svg>
