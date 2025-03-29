@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64">
+  <!-- Logo Circle -->
+  <circle cx="32" cy="32" r="32" fill="#1abc9c" />
+  
+  <!-- File Icon -->
+  <path d="M18 14h20l12 12v18c0 2.209-1.791 4-4 4H14c-2.209 0-4-1.791-4-4V14c0-2.209 1.791-4 4-4h4" fill="#ffffff" />
+  
+  <!-- Folded Corner -->
+  <polygon points="38,14 38,26 50,26" fill="#1abc9c" />
+  
+  <!-- Transformation Arrow (Chevron) -->
+  <path d="M26 34l6 6 6-6" fill="none" stroke="#1abc9c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Title Text -->
+  <g transform="translate(74, 38)">
+    <!-- "File" text -->
+    <text font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#333333">
+      File
+    </text>
+    <!-- "Metamorph" text -->
+    <text font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#1abc9c" x="41">
+      Metamorph
+    </text>
+  </g>
+  
+  <!-- Tagline -->
+  <text font-family="Arial, sans-serif" font-size="11" fill="#666666" x="74" y="52">
+    Secure file conversion. No tracking. No storage.
+  </text>
+</svg>
