@@ -1,7 +1,9 @@
 // src/stores/fileStore.js
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { OUTPUT_FORMATS } from '../constants/FileTypes';
+import { FILE_TYPES, OUTPUT_FORMATS } from '../constants/FileTypes';
+
+
 
 // Store principal pour la gestion des fichiers
 const useFileStore = create(
@@ -142,8 +144,10 @@ const useFileStore = create(
         return FILE_TYPES[activeTab]?.extensions || '';
       },
       
-      getOutputFormats: (activeTab) => {
-        return OUTPUT_FORMATS[activeTab] || [];
+      getOutputFormats: (tab = null) => {
+        // Utiliser le tab passé en paramètre ou récupérer celui du state
+        const tabToUse = tab || get().activeTab;
+        return OUTPUT_FORMATS[tabToUse] || [];
       },
       
       // Drag and Drop handlers

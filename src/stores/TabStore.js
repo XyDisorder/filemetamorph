@@ -6,3 +6,4 @@ export const useTabStore = create((set) => ({
   setActiveTab: (activeTab) => set({activeTab})
 }))
 
+export default useTabStore;

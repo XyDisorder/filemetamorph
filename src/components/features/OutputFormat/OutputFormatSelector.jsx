@@ -1,29 +1,17 @@
 // src/components/OutputFormatSelector.jsx
 import React from 'react';
-import useFileStore from '../../../stores/FileStore';
-import { useTabStore } from '../../../stores/TabStore';
 
-const OutputFormatSelector = () => {
-  // Récupérer les états et actions du store
-  const outputFormat = useFileStore(state => state.outputFormat);
-  const setOutputFormat = useFileStore(state => state.setOutputFormat);
-  const getOutputFormats = useFileStore(state => state.getOutputFormats);
-  const activeTab = useTabStore();
+const OutputFormatSelector = ({outputFormat, handleFormatChange, availableFormats }) => {
 
-  // Liste des formats disponibles pour l'onglet actif
-  const availableFormats = getOutputFormats(activeTab.activeTab);
-  
-  // Handler pour le changement de format
-  const handleFormatChange = (e) => {
-    setOutputFormat(e.target.value);
-  };
   
   return (
     <div className="flex items-center">
       <label htmlFor="output-format" className="text-gray-400 mr-3 text-sm">
         Output format:
       </label>
-      <div className="relative w-28">
+      
+      <div
+       className="relative w-28">
         <select
           id="output-format"
           value={outputFormat}
