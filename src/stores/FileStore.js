@@ -4,6 +4,47 @@ import { persist } from 'zustand/middleware';
 import { FILE_TYPES, OUTPUT_FORMATS } from '../constants/FileTypes';
 
 
+const getTabForFile = (file) => {
+  // Déterminer l'onglet approprié en fonction du type de fichier
+  const fileName = file.name.toLowerCase();
+  const mimeType = file.type;
+  
+  // Vérifier d'abord par MIME type
+  for (const [tabType, typeInfo] of Object.entries(FILE_TYPES)) {
+    if (typeInfo.mimeTypes.some(type => mimeType.includes(type))) {
+      return tabType;
+    }
+  }
+  
+  // Si aucun MIME type ne correspond, vérifier par extension
+  for (const [tabType, typeInfo] of Object.entries(FILE_TYPES)) {
+    const extensions = typeInfo.extensions.split(',');
+    if (extensions.some(ext => fileName.endsWith(ext.replace('.', '')))) {
+      return tabType;
+    }
+  }
+  
+  // Si aucune correspondance n'est trouvée, retourner null
+  return null;
+};
+
+// Puis modifiez la fonction setSelectedFile dans votre store
+
+// Fonction helper pour vérifier si un fichier correspond au type attendu
+const isFileTypeValid = (file, tabType) => {
+  if (!file || !tabType || !FILE_TYPES[tabType]) return false;
+  
+  // Vérifier par le type MIME
+  const validMimeTypes = FILE_TYPES[tabType].mimeTypes;
+  if (validMimeTypes.some(type => file.type.includes(type))) {
+    return true;
+  }
+  
+  // Vérifier par l'extension si le MIME type n'est pas concluant
+  const fileName = file.name.toLowerCase();
+  const extensions = FILE_TYPES[tabType].extensions.split(',');
+  return extensions.some(ext => fileName.endsWith(ext.replace('.', '')));
+};
 
 // Store principal pour la gestion des fichiers
 const useFileStore = create(
@@ -39,26 +80,38 @@ const useFileStore = create(
       // Actions - Gestion des fichiers
       setIsDragging: (isDragging) => set({ isDragging }),
       
-      setSelectedFile: (file) => {
-        const { activeTab } = get();
-        
+      setSelectedFile: (file, activeTab = null) => {
         if (!file) {
           set({ selectedFile: null, errorMessage: null });
           return;
         }
         
-        if (!isFileTypeValid(file, activeTab)) {
+        // Déterminer l'onglet approprié pour ce fichier
+        const appropriateTab = getTabForFile(file);
+        
+        // Si aucun onglet approprié n'est trouvé, afficher une erreur
+        if (!appropriateTab) {
           set({ 
-            errorMessage: `Invalid file type. Please select a ${activeTab} file.`,
+            errorMessage: `Unsupported file type.`,
             selectedFile: null
           });
           return;
         }
         
+        // Si nous sommes déjà dans le bon onglet ou si aucun onglet spécifique n'est requis
+        const tabToUse = activeTab || get().activeTab;
+        
+        // Si le fichier est pris en charge mais pas dans l'onglet actuel, changer d'onglet
+        if (appropriateTab !== tabToUse) {
+          // Utiliser la fonction setActiveTab pour changer d'onglet
+          get().setActiveTab(appropriateTab);
+          // La fonction setActiveTab définit déjà outputFormat par défaut pour cet onglet
+        }
+        
+        // Définir le fichier sélectionné
         set({ 
           selectedFile: file,
-          errorMessage: null,
-          convertedFile: null
+          errorMessage: null
         });
       },
       

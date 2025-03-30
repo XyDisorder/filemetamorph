@@ -1,14 +1,8 @@
-// src/components/OutputFormatSelector.jsx
 import React from 'react';
 
 const OutputFormatSelector = ({outputFormat, handleFormatChange, availableFormats }) => {
-
-  
   return (
     <div className="flex items-center">
-      <label htmlFor="output-format" className="text-gray-400 mr-3 text-sm">
-        Output format:
-      </label>
       
       <div
        className="relative w-28">
