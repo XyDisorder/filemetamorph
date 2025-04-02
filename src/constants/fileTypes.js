@@ -30,7 +30,14 @@ export const FILE_TYPES = {
       'image/gif',
       'image/bmp',
       'image/svg+xml',
-      'image/webp'
+      'image/webp',
+      'audio/mp4'
+    ]
+  },
+  video: {
+    extensions: '.mp4, .MOV',
+    mimeTypes: [
+      'video/mp4'
     ]
   }
 };
@@ -56,6 +63,10 @@ export const OUTPUT_FORMATS = {
     { value: 'webp', label: 'WEBP' },
     { value: 'svg', label: 'SVG' },
     { value: 'gif', label: 'GIF' }
+  ],
+  video: [
+    {value: 'mov', label: 'MOV'},
+    {value: 'mp4', label: 'MP4'},
   ]
 };
 
