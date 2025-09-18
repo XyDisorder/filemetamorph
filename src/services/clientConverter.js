@@ -97,14 +97,19 @@ class ClientConverter {
   // Conversion principale
   async convert(file, targetFormat, fileType) {
     try {
-      const fileBuffer = await file.arrayBuffer();
-      const text = new TextDecoder('utf-8').decode(fileBuffer);
-      
       switch (fileType) {
         case 'text':
+          const fileBuffer = await file.arrayBuffer();
+          const text = new TextDecoder('utf-8').decode(fileBuffer);
           return await this.convertText(text, targetFormat);
+          
         case 'image':
           return await this.convertImage(file, targetFormat);
+          
+        case 'audio':
+        case 'video':
+          throw new Error(`Audio/Video conversion not yet implemented. File format preserved.`);
+          
         default:
           throw new Error(`Unsupported file type: ${fileType}`);
       }
