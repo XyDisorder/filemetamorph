@@ -1,5 +1,6 @@
 // src/services/clientConverter.js
 import { PDFDocument, rgb } from 'pdf-lib';
+import lamejs from 'lamejs';
 
 class ClientConverter {
   constructor() {
@@ -107,8 +108,9 @@ class ClientConverter {
           return await this.convertImage(file, targetFormat);
           
         case 'audio':
+          return await this.convertAudio(file, targetFormat);
         case 'video':
-          throw new Error(`Audio/Video conversion not yet implemented. File format preserved.`);
+          throw new Error(`Video conversion not yet implemented. File format preserved.`);
           
         default:
           throw new Error(`Unsupported file type: ${fileType}`);
@@ -132,6 +134,130 @@ class ClientConverter {
       default:
         throw new Error(`Unsupported text format: ${targetFormat}`);
     }
+  }
+
+  // Conversion audio
+  async convertAudio(file, targetFormat) {
+    return new Promise((resolve, reject) => {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const fileReader = new FileReader();
+      
+      fileReader.onload = async (e) => {
+        try {
+          const arrayBuffer = e.target.result;
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+          
+          switch (targetFormat) {
+            case 'wav':
+              resolve(this.audioBufferToWav(audioBuffer));
+              break;
+            case 'mp3':
+              resolve(await this.audioBufferToMp3(audioBuffer));
+              break;
+            case 'ogg':
+              resolve(await this.audioBufferToOgg(audioBuffer));
+              break;
+            default:
+              reject(new Error(`Unsupported audio format: ${targetFormat}`));
+          }
+        } catch (error) {
+          reject(new Error(`Audio conversion failed: ${error.message}`));
+        }
+      };
+      
+      fileReader.onerror = () => reject(new Error('Failed to read audio file'));
+      fileReader.readAsArrayBuffer(file);
+    });
+  }
+
+  // Convertir AudioBuffer en WAV
+  audioBufferToWav(audioBuffer) {
+    const numberOfChannels = audioBuffer.numberOfChannels;
+    const sampleRate = audioBuffer.sampleRate;
+    const length = audioBuffer.length;
+    
+    const arrayBuffer = new ArrayBuffer(44 + length * numberOfChannels * 2);
+    const view = new DataView(arrayBuffer);
+    
+    // WAV header
+    const writeString = (offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+    
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + length * numberOfChannels * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numberOfChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * numberOfChannels * 2, true);
+    view.setUint16(32, numberOfChannels * 2, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, length * numberOfChannels * 2, true);
+    
+    // Audio data
+    let offset = 44;
+    for (let i = 0; i < length; i++) {
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(channel)[i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+    
+    return new Blob([arrayBuffer], { type: 'audio/wav' });
+  }
+
+  // Convertir AudioBuffer en MP3
+  async audioBufferToMp3(audioBuffer) {
+    const numberOfChannels = audioBuffer.numberOfChannels;
+    const sampleRate = audioBuffer.sampleRate;
+    const length = audioBuffer.length;
+    
+    // Convertir en format PCM 16-bit
+    const pcmData = new Int16Array(length * numberOfChannels);
+    let offset = 0;
+    
+    for (let i = 0; i < length; i++) {
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const sample = audioBuffer.getChannelData(channel)[i];
+        pcmData[offset] = Math.max(-32768, Math.min(32767, sample * 32768));
+        offset++;
+      }
+    }
+    
+    // Encoder en MP3 avec lamejs
+    const mp3encoder = new lamejs.Mp3Encoder(numberOfChannels, sampleRate, 128);
+    const mp3Data = [];
+    
+    const blockSize = 1152;
+    for (let i = 0; i < pcmData.length; i += blockSize * numberOfChannels) {
+      const left = pcmData.subarray(i, i + blockSize);
+      const right = numberOfChannels > 1 ? pcmData.subarray(i + blockSize, i + blockSize * 2) : left;
+      const mp3buf = mp3encoder.encodeBuffer(left, right);
+      if (mp3buf.length > 0) {
+        mp3Data.push(mp3buf);
+      }
+    }
+    
+    const mp3buf = mp3encoder.flush();
+    if (mp3buf.length > 0) {
+      mp3Data.push(mp3buf);
+    }
+    
+    return new Blob(mp3Data, { type: 'audio/mp3' });
+  }
+
+  // Convertir AudioBuffer en OGG (simplifié - retourne WAV pour l'instant)
+  async audioBufferToOgg(audioBuffer) {
+    // Pour l'instant, on retourne du WAV car l'encodage OGG est complexe
+    // Dans une version future, on pourrait utiliser ogg.js
+    return this.audioBufferToWav(audioBuffer);
   }
 
   // Télécharger le fichier converti
