@@ -4,8 +4,7 @@ const sharp = require('sharp');
 const { PDFDocument, rgb } = require('pdf-lib');
 const { Document, Packer, Paragraph, TextRun } = require('docx');
 const mammoth = require('mammoth');
-const rtfParser = require('rtf-parser');
-// FFmpeg sera chargé dynamiquement si nécessaire
+// rtf-parser retiré temporairement pour éviter les problèmes de bundling
 
 const app = new Hono();
 
@@ -23,12 +22,14 @@ const extractTextFromFile = async (fileBuffer, fromFormat) => {
       return docxResult.value;
     
     case 'rtf':
-      return new Promise((resolve, reject) => {
-        rtfParser.string(fileBuffer.toString('utf8'), (err, doc) => {
-          if (err) reject(err);
-          else resolve(doc.content.map(p => p.content).join('\n'));
-        });
-      });
+      // Extraction basique du texte RTF (sans la bibliothèque rtf-parser)
+      const rtfText = fileBuffer.toString('utf8');
+      // Supprimer les codes RTF et extraire le texte brut
+      return rtfText
+        .replace(/\\[a-z]+\d*\s?/g, '') // Supprimer les codes RTF
+        .replace(/[{}]/g, '') // Supprimer les accolades
+        .replace(/\s+/g, ' ') // Normaliser les espaces
+        .trim();
     
     case 'pdf':
       // Pour PDF, on utilise une approche simplifiée

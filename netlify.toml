@@ -6,7 +6,7 @@
 [functions]
   node_bundler = "esbuild"
   included_files = ["node_modules/**"]
-  external_node_modules = ["sharp", "pdf-lib", "docx", "mammoth", "rtf-parser"]
+  external_node_modules = ["sharp", "pdf-lib", "docx", "mammoth"]
 
 [[redirects]]
   from = "/api/*"
