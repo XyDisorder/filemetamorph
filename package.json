@@ -15,16 +15,12 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "concurrently": "^9.2.1",
     "cors": "^2.8.5",
-    "docx": "^9.5.1",
     "express": "^5.1.0",
     "hono": "^3.11.7",
-    "mammoth": "^1.10.0",
     "multer": "^2.0.2",
-    "pdf-lib": "^1.17.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.1",
-    "sharp": "^0.34.4",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
