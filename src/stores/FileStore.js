@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { FILE_TYPES, OUTPUT_FORMATS } from '../constants/FileTypes';
+import apiService from '../services/apiService';
 
 
 const getTabForFile = (file) => {
@@ -133,25 +134,26 @@ const useFileStore = create(
         set({ isConverting: true, conversionProgress: 0, errorMessage: null });
         
         try {
-          // Simuler la progression de la conversion
-          for (let i = 1; i <= 10; i++) {
-            await new Promise(resolve => setTimeout(resolve, 200));
-            set({ conversionProgress: i * 10 });
+          // Simuler la progression de la conversion (pour l'UX)
+          const progressInterval = setInterval(() => {
+            set(state => ({ 
+              conversionProgress: Math.min(state.conversionProgress + 10, 90) 
+            }));
+          }, 200);
+          
+          // Appeler l'API de conversion réelle
+          const result = await apiService.convertFile(selectedFile, outputFormat, activeTab);
+          
+          clearInterval(progressInterval);
+          
+          if (!result.success) {
+            throw new Error(result.error);
           }
           
-          // Dans une application réelle, vous appelleriez ici votre API de conversion
-          // const response = await api.convertFile(selectedFile, outputFormat);
-          // const convertedUrl = response.data.url;
+          const convertedFile = result.file;
           
-          // Générer un objet "faux" pour représenter le fichier converti
-          const originalName = selectedFile.name.split('.')[0];
-          const convertedFile = {
-            name: `${originalName}.${outputFormat}`,
-            size: selectedFile.size, // En pratique, la taille pourrait changer
-            type: `application/${outputFormat}`, // Simplification, en réalité dépend du format
-            lastModified: new Date().getTime(),
-            url: URL.createObjectURL(selectedFile) // En pratique, ce serait l'URL du fichier converti
-          };
+          // Créer l'URL pour le téléchargement
+          const downloadUrl = URL.createObjectURL(convertedFile);
           
           // Ajouter à l'historique
           const historyEntry = {
@@ -162,11 +164,16 @@ const useFileStore = create(
             fromFormat: selectedFile.name.split('.').pop(),
             toFormat: outputFormat,
             timestamp: new Date().toISOString(),
-            size: convertedFile.size
+            originalSize: result.originalSize,
+            convertedSize: result.convertedSize,
+            downloadUrl: downloadUrl
           };
           
           set(state => ({ 
-            convertedFile,
+            convertedFile: {
+              ...convertedFile,
+              downloadUrl: downloadUrl
+            },
             isConverting: false,
             conversionProgress: 100,
             conversionHistory: [historyEntry, ...state.conversionHistory.slice(0, 9)] // Garder les 10 dernières conversions
@@ -176,20 +183,48 @@ const useFileStore = create(
           console.error('Conversion error:', error);
           set({ 
             isConverting: false,
-            errorMessage: 'Error during conversion. Please try again.',
+            errorMessage: error.message || 'Error during conversion. Please try again.',
             conversionProgress: 0
           });
         }
       },
       
-      clearConvertedFile: () => set({ 
-        convertedFile: null,
-        conversionProgress: 0
-      }),
+      clearConvertedFile: () => {
+        const { convertedFile } = get();
+        // Nettoyer l'URL d'objet pour éviter les fuites mémoire
+        if (convertedFile?.downloadUrl) {
+          URL.revokeObjectURL(convertedFile.downloadUrl);
+        }
+        set({ 
+          convertedFile: null,
+          conversionProgress: 0
+        });
+      },
+      
+      downloadConvertedFile: () => {
+        const { convertedFile } = get();
+        if (convertedFile?.downloadUrl) {
+          const link = document.createElement('a');
+          link.href = convertedFile.downloadUrl;
+          link.download = convertedFile.name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      },
       
       clearError: () => set({ errorMessage: null }),
       
-      clearHistory: () => set({ conversionHistory: [] }),
+      clearHistory: () => {
+        const { conversionHistory } = get();
+        // Nettoyer toutes les URLs d'objet dans l'historique
+        conversionHistory.forEach(entry => {
+          if (entry.downloadUrl) {
+            URL.revokeObjectURL(entry.downloadUrl);
+          }
+        });
+        set({ conversionHistory: [] });
+      },
       
       // Getters utiles
       getAcceptedFileTypes: () => {

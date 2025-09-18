@@ -2,7 +2,7 @@ import React, { useRef, useCallback } from 'react';
 import useFileStore from '../../stores/FileStore';
 import useTabStore from '../../stores/TabStore';
 import FileDropper from '../features/FileDropper/FileDropper';
-import { FILE_TYPES } from '../../constants/FileTypes'; // Importez vos constantes de types de fichiers
+import { FILE_TYPES } from '../../constants/FileTypes';
 
 export function FileDropperContainer() {
   const fileInputRef = useRef(null);

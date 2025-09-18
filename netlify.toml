@@ -1,0 +1,18 @@
+[build]
+  command = "npm run build"
+  publish = "dist"  # ou "build" selon votre configuration
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["node_modules/**"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[dev]
+command = "vite"
+targetPort = 5173
+functions = "netlify/functions"

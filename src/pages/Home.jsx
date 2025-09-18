@@ -3,12 +3,17 @@ import { TabsContainer } from "../components/containers/TabsContainer";
 import { OutputFormatSelectorContainer } from "../components/containers/OutputFormatSelectorContainer";
 import { FileDropperContainer } from "../components/containers/FileDropperContainer";
 import ConvertButtonContainer from "../components/containers/ConvertButtonContainer";
+import ConvertedFileDisplay from "../components/features/Convert/ConvertedFileDisplay";
+import ErrorMessage from "../components/features/Convert/ErrorMessage";
 
 export default function Home() {
   return(
     <div>
       <TabsContainer />
     <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+      {/* Error display */}
+      <ErrorMessage />
+      
       {/* Zone de glisser-déposer */}
       <div className="mb-8">
         <FileDropperContainer />
@@ -23,6 +28,11 @@ export default function Home() {
         
         <ConvertButtonContainer />
       </div>
+    </div>
+    
+    {/* converted file display */}
+    <div className="mt-6">
+      <ConvertedFileDisplay />
     </div>
     </div>
   )
