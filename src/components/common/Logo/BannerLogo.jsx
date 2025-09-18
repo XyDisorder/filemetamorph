@@ -1,6 +1,6 @@
 // BannerIcon.jsx
 import React from "react";
-import logoBanner from "../../../assets/logoBanner.svg"
+import logoBanner from "../../../assets/logobanner.svg"
 
 const BannerLogo = ({ width = 100, height = 100 }) => {
   return (
