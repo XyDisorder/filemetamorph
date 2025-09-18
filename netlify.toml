@@ -1,18 +1,24 @@
 [build]
   command = "npm run build"
-  publish = "dist"  # ou "build" selon votre configuration
+  publish = "dist"
   functions = "netlify/functions"
 
 [functions]
   node_bundler = "esbuild"
   included_files = ["node_modules/**"]
+  external_node_modules = ["sharp", "pdf-lib", "docx", "mammoth", "rtf-parser", "@ffmpeg/ffmpeg", "@ffmpeg/util"]
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 [dev]
-command = "vite"
-targetPort = 5173
-functions = "netlify/functions"
+  command = "vite"
+  targetPort = 5173
+  functions = "netlify/functions"

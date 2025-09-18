@@ -2,7 +2,7 @@
 class ApiService {
   constructor() {
     // Utiliser le serveur de développement local en mode dev
-    this.baseUrl = process.env.NODE_ENV === 'development' 
+    this.baseUrl = import.meta.env.DEV 
       ? 'http://localhost:8888/.netlify/functions/convert'
       : '/.netlify/functions/convert';
   }

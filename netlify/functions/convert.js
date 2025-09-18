@@ -5,11 +5,8 @@ const { PDFDocument, rgb } = require('pdf-lib');
 const { Document, Packer, Paragraph, TextRun } = require('docx');
 const mammoth = require('mammoth');
 const rtfParser = require('rtf-parser');
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
-
-// Configurer le chemin FFmpeg
-ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+const { FFmpeg } = require('@ffmpeg/ffmpeg');
+const { fetchFile, toBlobURL } = require('@ffmpeg/util');
 
 const app = new Hono();
 
@@ -164,121 +161,101 @@ const convertImageFile = async (fileBuffer, fromFormat, toFormat) => {
 
 // Fonction pour convertir les fichiers audio
 const convertAudioFile = async (fileBuffer, fromFormat, toFormat) => {
-  return new Promise((resolve, reject) => {
-    const outputChunks = [];
+  try {
+    const ffmpeg = new FFmpeg();
     
-    // Options de conversion selon le format de sortie
-    let command = ffmpeg()
-      .input(fileBuffer)
-      .toFormat(toFormat);
+    // Charger FFmpeg
+    await ffmpeg.load({
+      coreURL: await toBlobURL('/ffmpeg-core.js', 'text/javascript'),
+      wasmURL: await toBlobURL('/ffmpeg-core.wasm', 'application/wasm'),
+    });
+    
+    // Écrire le fichier d'entrée
+    await ffmpeg.writeFile(`input.${fromFormat}`, await fetchFile(fileBuffer));
     
     // Configurer les options selon le format
+    let outputOptions = [];
     switch (toFormat) {
       case 'mp3':
-        command = command.audioBitrate('192k')
-                        .audioChannels(2)
-                        .audioFrequency(44100);
+        outputOptions = ['-b:a', '192k', '-ac', '2', '-ar', '44100'];
         break;
-      
       case 'wav':
-        command = command.audioCodec('pcm_s16le')
-                        .audioChannels(2)
-                        .audioFrequency(44100);
+        outputOptions = ['-acodec', 'pcm_s16le', '-ac', '2', '-ar', '44100'];
         break;
-      
       case 'ogg':
-        command = command.audioCodec('libvorbis')
-                        .audioBitrate('128k');
+        outputOptions = ['-acodec', 'libvorbis', '-b:a', '128k'];
         break;
-      
       case 'flac':
-        command = command.audioCodec('flac')
-                        .audioChannels(2)
-                        .audioFrequency(44100);
+        outputOptions = ['-acodec', 'flac', '-ac', '2', '-ar', '44100'];
         break;
-      
       case 'aac':
-        command = command.audioCodec('aac')
-                        .audioBitrate('128k')
-                        .audioChannels(2);
+        outputOptions = ['-acodec', 'aac', '-b:a', '128k', '-ac', '2'];
         break;
     }
     
-    command
-      .on('error', (err) => {
-        reject(new Error(`Audio conversion failed: ${err.message}`));
-      })
-      .on('end', () => {
-        resolve(Buffer.concat(outputChunks));
-      })
-      .pipe()
-      .on('data', (chunk) => {
-        outputChunks.push(chunk);
-      });
-  });
+    // Exécuter la conversion
+    await ffmpeg.exec(['-i', `input.${fromFormat}`, ...outputOptions, `output.${toFormat}`]);
+    
+    // Lire le fichier de sortie
+    const outputData = await ffmpeg.readFile(`output.${toFormat}`);
+    
+    // Nettoyer les fichiers temporaires
+    await ffmpeg.deleteFile(`input.${fromFormat}`);
+    await ffmpeg.deleteFile(`output.${toFormat}`);
+    
+    return Buffer.from(outputData);
+    
+  } catch (error) {
+    throw new Error(`Audio conversion failed: ${error.message}`);
+  }
 };
 
 // Fonction pour convertir les vidéos
 const convertVideoFile = async (fileBuffer, fromFormat, toFormat) => {
-  return new Promise((resolve, reject) => {
-    const outputChunks = [];
+  try {
+    const ffmpeg = new FFmpeg();
     
-    // Options de conversion selon le format de sortie
-    let command = ffmpeg()
-      .input(fileBuffer)
-      .toFormat(toFormat);
+    // Charger FFmpeg
+    await ffmpeg.load({
+      coreURL: await toBlobURL('/ffmpeg-core.js', 'text/javascript'),
+      wasmURL: await toBlobURL('/ffmpeg-core.wasm', 'application/wasm'),
+    });
+    
+    // Écrire le fichier d'entrée
+    await ffmpeg.writeFile(`input.${fromFormat}`, await fetchFile(fileBuffer));
     
     // Configurer les options selon le format
+    let outputOptions = [];
     switch (toFormat) {
       case 'mp4':
-        command = command
-          .videoCodec('libx264')
-          .audioCodec('aac')
-          .videoBitrate('1000k')
-          .audioBitrate('128k')
-          .size('1280x720')
-          .fps(30);
+        outputOptions = ['-c:v', 'libx264', '-c:a', 'aac', '-b:v', '1000k', '-b:a', '128k', '-s', '1280x720', '-r', '30'];
         break;
-      
       case 'mov':
-        command = command
-          .videoCodec('libx264')
-          .audioCodec('aac')
-          .videoBitrate('1000k')
-          .audioBitrate('128k')
-          .size('1280x720')
-          .fps(30);
+        outputOptions = ['-c:v', 'libx264', '-c:a', 'aac', '-b:v', '1000k', '-b:a', '128k', '-s', '1280x720', '-r', '30'];
         break;
-      
       case 'avi':
-        command = command
-          .videoCodec('libx264')
-          .audioCodec('mp3')
-          .videoBitrate('1000k')
-          .audioBitrate('128k');
+        outputOptions = ['-c:v', 'libx264', '-c:a', 'mp3', '-b:v', '1000k', '-b:a', '128k'];
         break;
-      
       case 'webm':
-        command = command
-          .videoCodec('libvpx')
-          .audioCodec('libvorbis')
-          .videoBitrate('800k')
-          .audioBitrate('128k');
+        outputOptions = ['-c:v', 'libvpx', '-c:a', 'libvorbis', '-b:v', '800k', '-b:a', '128k'];
         break;
     }
     
-    command
-      .on('error', (err) => {
-        reject(new Error(`Video conversion failed: ${err.message}`));
-      })
-      .on('end', () => {
-        resolve(Buffer.concat(outputChunks));
-      })
-      .pipe()
-      .on('data', (chunk) => {
-        outputChunks.push(chunk);
-      });
-  });
+    // Exécuter la conversion
+    await ffmpeg.exec(['-i', `input.${fromFormat}`, ...outputOptions, `output.${toFormat}`]);
+    
+    // Lire le fichier de sortie
+    const outputData = await ffmpeg.readFile(`output.${toFormat}`);
+    
+    // Nettoyer les fichiers temporaires
+    await ffmpeg.deleteFile(`input.${fromFormat}`);
+    await ffmpeg.deleteFile(`output.${toFormat}`);
+    
+    return Buffer.from(outputData);
+    
+  } catch (error) {
+    throw new Error(`Video conversion failed: ${error.message}`);
+  }
 };
 
 app.post('/api/convert', async (c) => {
