@@ -1,4 +1,4 @@
-import { FILE_TYPES } from "../constants/FileTypes";
+import { FILE_TYPES } from "../constants/fileTypes";
 
 export const isFileTypeValid = (file, tabType) => {
   if (!file || !tabType || !FILE_TYPES[tabType]) return false;

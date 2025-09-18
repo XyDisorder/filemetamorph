@@ -1,7 +1,7 @@
 // src/stores/fileStore.js
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { FILE_TYPES, OUTPUT_FORMATS } from '../constants/FileTypes';
+import { FILE_TYPES, OUTPUT_FORMATS } from '../constants/fileTypes';
 import apiService from '../services/apiService';
 
 
