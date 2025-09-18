@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "@ffmpeg/ffmpeg": "^0.12.15",
     "concurrently": "^9.2.1",
     "cors": "^2.8.5",
     "docx": "^9.5.1",
