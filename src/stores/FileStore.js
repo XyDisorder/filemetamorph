@@ -141,8 +141,16 @@ const useFileStore = create(
             }));
           }, 200);
           
-          // Appeler l'API de conversion réelle
-          const result = await apiService.convertFile(selectedFile, outputFormat, activeTab);
+          // Détecter le vrai type de fichier (pas juste l'onglet actif)
+          const actualFileType = getTabForFile(selectedFile);
+          console.log(`🔍 File detection: fileName=${selectedFile.name}, mimeType=${selectedFile.type}, activeTab=${activeTab}, actualFileType=${actualFileType}, outputFormat=${outputFormat}`);
+          
+          if (!actualFileType) {
+            throw new Error('Unsupported file type');
+          }
+          
+          // Appeler l'API de conversion réelle avec le bon type de fichier
+          const result = await apiService.convertFile(selectedFile, outputFormat, actualFileType);
           
           clearInterval(progressInterval);
           

@@ -98,6 +98,8 @@ class ClientConverter {
   // Conversion principale
   async convert(file, targetFormat, fileType) {
     try {
+      console.log(`🔍 Converting: fileType=${fileType}, targetFormat=${targetFormat}, fileName=${file.name}`);
+      
       switch (fileType) {
         case 'text':
           const fileBuffer = await file.arrayBuffer();
@@ -116,6 +118,7 @@ class ClientConverter {
           throw new Error(`Unsupported file type: ${fileType}`);
       }
     } catch (error) {
+      console.error(`❌ Conversion error:`, error);
       throw new Error(`Conversion failed: ${error.message}`);
     }
   }
